@@ -11,29 +11,27 @@ using System.Threading.Tasks;
 
 namespace At.Lagg.ActivityWatchVS2022.Services
 {
-    public class ConsoleService
+    public class ConsoleService : ExtensionPart
     {
         //TODO: use new URL once the new Support thread is here.
         private const string SUPPORT_THREAD_URL = @"https://tinyurl.com/yzg8aq4o";
         private const string COFFEE_URL = @"https://buymeacoffee.com/LaggAt";
 
-        private readonly ExtensionCore _container;
-        private readonly VisualStudioExtensibility _extensibility;
-        private readonly object _initializationTask;
         private OutputWindow _outputWindow;
 
         public ConsoleService(ExtensionCore container, VisualStudioExtensibility extensibility)
-            : base()
+            : base(container, extensibility)
         {
-            this._container = Requires.NotNull(container, nameof(container));
-            this._extensibility = Requires.NotNull(extensibility, nameof(extensibility));
-            this._initializationTask = Task.Run(this.InitializeAsync);
+            var initTask = Task.Run(this.InitializeAsync);
+#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
+            initTask.Wait();
+#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
         }
 
         protected async Task InitializeAsync()
         {
             _outputWindow =
-                await this._extensibility.Views().Output.GetChannelAsync(
+                await this.Extensibility.Views().Output.GetChannelAsync(
                 "Activity Watch",
                 $"{nameof(ActivityWatchVS2022)}-{Guid.NewGuid()}",
                 default
@@ -67,15 +65,14 @@ namespace At.Lagg.ActivityWatchVS2022.Services
                 default: // Good morning
                     int hour = now.Hour;
                     string dayTime = "day";
-                    if(hour >= 22) { dayTime = "night"; }
-                    else if(hour >= 17) { dayTime = "evening"; }
-                    else if(hour >= 12) { dayTime = "afternoon"; }
-                    else if(hour >= 6) { dayTime = "morning"; }
+                    if (hour >= 22) { dayTime = "night"; }
+                    else if (hour >= 17) { dayTime = "evening"; }
+                    else if (hour >= 12) { dayTime = "afternoon"; }
+                    else if (hour >= 6) { dayTime = "morning"; }
                     else { dayTime = "night"; }
                     greeting = $"Good {dayTime}";
                     break;
             }
-
 
             var welcomeMessages = new List<string>()
             {
@@ -88,7 +85,7 @@ namespace At.Lagg.ActivityWatchVS2022.Services
             };
 
             // extension has it's birthday (showing for a week). Counting from the first version for VS2019.
-            if(now.Month == 3 && now.Day <= 23 && now.Day >= 23-7)
+            if (now.Month == 3 && now.Day <= 23 && now.Day >= 23 - 7)
             {
                 int age = (now.Year - 2019);
                 string ageOrd = age.Ordinal();

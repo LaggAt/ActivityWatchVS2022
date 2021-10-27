@@ -2,6 +2,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.0.159-alpha" />
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.0.159-alpha" />
+    <PackageReference Include="Microsoft.VisualStudio.Interop" Version="17.0.0-previews-5-31722-452" />
   </ItemGroup>
   <PropertyGroup>
     <TargetFramework>net6.0-windows</TargetFramework>

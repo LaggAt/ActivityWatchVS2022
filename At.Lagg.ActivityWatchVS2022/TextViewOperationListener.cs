@@ -15,7 +15,7 @@ namespace At.Lagg.ActivityWatchVS2022
     [ExtensionPart(typeof(ITextViewChangedListener))]
     [AppliesTo(ContentType = "text")]
     [AppliesTo(ContentType = "code")]
-    public sealed class TextViewOperationListener : ExtensionPart, ITextViewLifetimeListener, ITextViewChangedListener
+    public class TextViewOperationListener : ExtensionPart, ITextViewLifetimeListener, ITextViewChangedListener
     {
         private readonly EventService _eventService;
 

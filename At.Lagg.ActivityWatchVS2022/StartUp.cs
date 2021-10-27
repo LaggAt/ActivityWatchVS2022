@@ -18,6 +18,7 @@ namespace At.Lagg.ActivityWatchVS2022
             base.InitializeServices(serviceCollection);
 
             serviceCollection.AddSingleton<EventService>();
+            serviceCollection.AddSingleton<ConsoleService>();
         }
     }
 }
