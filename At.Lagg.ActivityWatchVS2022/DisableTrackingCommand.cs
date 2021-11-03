@@ -1,13 +1,6 @@
 ﻿using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Commands;
 using Microsoft.VisualStudio.Extensibility.Definitions;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace At.Lagg.ActivityWatchVS2022
 {
@@ -31,7 +24,7 @@ namespace At.Lagg.ActivityWatchVS2022
         public override async Task ExecuteCommandAsync(IClientContext context, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            
+
             lock (this._syncLock)
             {
                 this.enabled = !this.enabled;

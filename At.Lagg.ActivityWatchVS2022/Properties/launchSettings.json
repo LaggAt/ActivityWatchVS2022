@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "At.Lagg.ActivityWatchVS2022": {
+      "commandName": "Project",
+      "jsWebView2Debugging": true,
+      "sqlDebugging": true,
+      "remoteDebugEnabled": false,
+      "nativeDebugging": true
+    }
+  }
+}

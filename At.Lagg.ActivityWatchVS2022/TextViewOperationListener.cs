@@ -1,13 +1,8 @@
-﻿using Microsoft.VisualStudio.Extensibility.Editor.UI;
-using Microsoft.VisualStudio.Extensibility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.Extensibility.Editor;
-using At.Lagg.ActivityWatchVS2022.Services;
+﻿using At.Lagg.ActivityWatchVS2022.Services;
 using Microsoft;
+using Microsoft.VisualStudio.Extensibility;
+using Microsoft.VisualStudio.Extensibility.Editor;
+using Microsoft.VisualStudio.Extensibility.Editor.UI;
 
 namespace At.Lagg.ActivityWatchVS2022
 {
@@ -28,17 +23,17 @@ namespace At.Lagg.ActivityWatchVS2022
 
         public async Task TextViewChangedAsync(TextViewChangedArgs args, CancellationToken cancellationToken)
         {
-            await this._eventService.AddEvent(args.AfterTextView.RpcContract);
+            await this._eventService.AddEventAsync(args.AfterTextView.RpcContract);
         }
 
         public async Task TextViewClosedAsync(ITextView textView, CancellationToken cancellationToken)
         {
-            await this._eventService.AddEvent(textView.RpcContract);
+            await this._eventService.AddEventAsync(textView.RpcContract);
         }
 
         public async Task TextViewCreatedAsync(ITextView textView, CancellationToken cancellationToken)
         {
-            await this._eventService.AddEvent(textView.RpcContract);
+            await this._eventService.AddEventAsync(textView.RpcContract);
         }
     }
 }

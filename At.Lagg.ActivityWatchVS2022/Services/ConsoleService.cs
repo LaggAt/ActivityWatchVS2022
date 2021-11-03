@@ -1,13 +1,15 @@
 ﻿using At.Lagg.ActivityWatchVS2022.Tools;
 using Microsoft;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Extensibility;
+using Microsoft.VisualStudio.Extensibility.Commands;
 using Microsoft.VisualStudio.Extensibility.Documents;
 using System;
-using System.Collections.Generic;
-using System.DirectoryServices.ActiveDirectory;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
+using System.Globalization;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.VisualStudio.Extensibility.Definitions;
 
 namespace At.Lagg.ActivityWatchVS2022.Services
 {
@@ -16,10 +18,14 @@ namespace At.Lagg.ActivityWatchVS2022.Services
         //TODO: use new URL once the new Support thread is here.
         private const string SUPPORT_THREAD_URL = @"https://tinyurl.com/yzg8aq4o";
         private const string COFFEE_URL = @"https://buymeacoffee.com/LaggAt";
+        //private readonly TraceSource _logger;
 
-        private OutputWindow _outputWindow;
+        //TODO: define trace level in settings
+        private LogLevel _logLevel = LogLevel.Debug;
 
-        public ConsoleService(ExtensionCore container, VisualStudioExtensibility extensibility)
+        private OutputWindow? _outputWindow;
+
+        public ConsoleService(ExtensionCore container, VisualStudioExtensibility extensibility) //, TraceSource traceListener
             : base(container, extensibility)
         {
             var initTask = Task.Run(this.InitializeAsync);
@@ -38,6 +44,37 @@ namespace At.Lagg.ActivityWatchVS2022.Services
             );
             Requires.NotNull(_outputWindow, nameof(_outputWindow));
             sayHello();
+            tellVersion();
+
+        }
+
+        public void WriteLineDebug(string str, params object?[] args)
+        {
+            this.WriteLine(LogLevel.Debug, str, args);
+        }
+        public void WriteLineInfo(string str, params object?[] args)
+        {
+            this.WriteLine(LogLevel.Information, str, args);
+        }
+        public void WriteLineError(string str, params object?[] args)
+        {
+            this.WriteLine(LogLevel.Error, str, args);
+        }
+
+        public void WriteLine(LogLevel level, string s, params object?[] args)
+        {
+            string str = $"{level}: {s}";
+            if (level >= this._logLevel)
+            {
+                _outputWindow?.Writer.WriteLine(str, args);
+            }
+        }
+
+        private void tellVersion()
+        {
+            //TODO: read version from Package.
+            string version = "0.0.TODO";
+            _outputWindow?.Writer.WriteLine($"ActivityWatchVS2022 v{version} ready. {SUPPORT_THREAD_URL}");
         }
 
         /// <summary>
@@ -81,7 +118,7 @@ namespace At.Lagg.ActivityWatchVS2022.Services
                 $"{greeting}, have fun coding!",
                 $"{greeting}, enjoying the Extension? Tell us your story: {SUPPORT_THREAD_URL}",
                 $"{greeting}, enjoying the Extension? Buy me a coffee: {COFFEE_URL}",
-                $"{greeting}, did you know you can temporarly disable me? See Extensions - AW: disable tracking.",
+                $"{greeting}, did you know weh have a privacy mode? See 'Menu - Extensions - AW: disable tracking'. Tracking will be re-enabled on restart, or when you choose to enable it again.",
             };
 
             // extension has it's birthday (showing for a week). Counting from the first version for VS2019.
@@ -95,7 +132,7 @@ namespace At.Lagg.ActivityWatchVS2022.Services
             }
 
             int index = random.Next(welcomeMessages.Count);
-            _outputWindow.Writer.WriteLine(welcomeMessages[index]);
+            _outputWindow?.Writer.WriteLine(welcomeMessages[index]);
         }
     }
 }
