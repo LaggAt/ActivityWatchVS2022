@@ -1238,26 +1238,17 @@ namespace At.Lagg.ActivityWatchVS2022.API.V1
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v11.0.0.0)")]
     internal partial class Info 
     {
-        [Newtonsoft.Json.JsonConstructor]
-        public Info(string? @device_id, string? @hostname, bool? @testing, string? @version)
-        {
-            this.Hostname = @hostname;
-            this.Version = @version;
-            this.Testing = @testing;
-            this.Device_id = @device_id;
-        }
-    
         [Newtonsoft.Json.JsonProperty("hostname", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string? Hostname { get; }
+        public string? Hostname { get; set; }= default!;
     
         [Newtonsoft.Json.JsonProperty("version", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string? Version { get; }
+        public string? Version { get; set; }= default!;
     
         [Newtonsoft.Json.JsonProperty("testing", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public bool? Testing { get; }
+        public bool? Testing { get; set; }= default!;
     
         [Newtonsoft.Json.JsonProperty("device_id", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string? Device_id { get; }
+        public string? Device_id { get; set; }= default!;
     
         public string ToJson()
         {
@@ -1274,25 +1265,17 @@ namespace At.Lagg.ActivityWatchVS2022.API.V1
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v11.0.0.0)")]
     internal partial class CreateBucket 
     {
-        [Newtonsoft.Json.JsonConstructor]
-        public CreateBucket(string @client, string @hostname, string @type)
-        {
-            this.Client = @client;
-            this.Type = @type;
-            this.Hostname = @hostname;
-        }
-    
         [Newtonsoft.Json.JsonProperty("client", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Client { get; }
+        public string Client { get; set; }= default!;
     
         [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Type { get; }
+        public string Type { get; set; }= default!;
     
         [Newtonsoft.Json.JsonProperty("hostname", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Hostname { get; }
+        public string Hostname { get; set; }= default!;
     
         public string ToJson()
         {
@@ -1310,52 +1293,39 @@ namespace At.Lagg.ActivityWatchVS2022.API.V1
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v11.0.0.0)")]
     internal partial class Bucket 
     {
-        [Newtonsoft.Json.JsonConstructor]
-        public Bucket(string @client, System.DateTimeOffset? @created, object? @data, System.Collections.Generic.ICollection<Event>? @events, string @hostname, string @id, string? @name, string @type)
-        {
-            this.Id = @id;
-            this.Name = @name;
-            this.Type = @type;
-            this.Client = @client;
-            this.Hostname = @hostname;
-            this.Created = @created;
-            this.Data = @data;
-            this.Events = @events;
-        }
-    
         /// <summary>The unique id for the bucket</summary>
         [Newtonsoft.Json.JsonProperty("id", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Id { get; }
+        public string Id { get; set; }= default!;
     
         /// <summary>The readable and renameable name for the bucket</summary>
         [Newtonsoft.Json.JsonProperty("name", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public string? Name { get; }
+        public string? Name { get; set; }= default!;
     
         /// <summary>The event type</summary>
         [Newtonsoft.Json.JsonProperty("type", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Type { get; }
+        public string Type { get; set; }= default!;
     
         /// <summary>The name of the client that is reporting to the bucket</summary>
         [Newtonsoft.Json.JsonProperty("client", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Client { get; }
+        public string Client { get; set; }= default!;
     
         /// <summary>The hostname of the machine on which the client is running</summary>
         [Newtonsoft.Json.JsonProperty("hostname", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public string Hostname { get; }
+        public string Hostname { get; set; }= default!;
     
         /// <summary>The creation datetime of the bucket</summary>
         [Newtonsoft.Json.JsonProperty("created", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.DateTimeOffset? Created { get; }
+        public System.DateTimeOffset? Created { get; set; }= default!;
     
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public object? Data { get; }
+        public object? Data { get; set; }= default!;
     
         [Newtonsoft.Json.JsonProperty("events", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<Event>? Events { get; }
+        public System.Collections.Generic.ICollection<Event>? Events { get; set; }= default!;
     
         public string ToJson()
         {
@@ -1373,23 +1343,15 @@ namespace At.Lagg.ActivityWatchVS2022.API.V1
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v11.0.0.0)")]
     internal partial class Event 
     {
-        [Newtonsoft.Json.JsonConstructor]
-        public Event(object? @data, double? @duration, System.DateTimeOffset @timestamp)
-        {
-            this.Timestamp = @timestamp;
-            this.Duration = @duration;
-            this.Data = @data;
-        }
-    
         [Newtonsoft.Json.JsonProperty("timestamp", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required(AllowEmptyStrings = true)]
-        public System.DateTimeOffset Timestamp { get; }
+        public System.DateTimeOffset Timestamp { get; set; }= default!;
     
         [Newtonsoft.Json.JsonProperty("duration", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public double? Duration { get; }
+        public double? Duration { get; set; }= default!;
     
         [Newtonsoft.Json.JsonProperty("data", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public object? Data { get; }
+        public object? Data { get; set; }= default!;
     
         public string ToJson()
         {
@@ -1406,22 +1368,15 @@ namespace At.Lagg.ActivityWatchVS2022.API.V1
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v11.0.0.0)")]
     internal partial class Query 
     {
-        [Newtonsoft.Json.JsonConstructor]
-        public Query(System.Collections.Generic.ICollection<string> @query, System.Collections.Generic.ICollection<string> @timeperiods)
-        {
-            this.Timeperiods = @timeperiods;
-            this.Query1 = @query;
-        }
-    
         /// <summary>List of periods to query</summary>
         [Newtonsoft.Json.JsonProperty("timeperiods", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
-        public System.Collections.Generic.ICollection<string> Timeperiods { get; }
+        public System.Collections.Generic.ICollection<string> Timeperiods { get; set; } = new System.Collections.ObjectModel.Collection<string>();
     
         /// <summary>String list of query statements</summary>
         [Newtonsoft.Json.JsonProperty("query", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
-        public System.Collections.Generic.ICollection<string> Query1 { get; }
+        public System.Collections.Generic.ICollection<string> Query1 { get; set; } = new System.Collections.ObjectModel.Collection<string>();
     
         public string ToJson()
         {
@@ -1439,14 +1394,8 @@ namespace At.Lagg.ActivityWatchVS2022.API.V1
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "10.5.2.0 (Newtonsoft.Json v11.0.0.0)")]
     internal partial class Export 
     {
-        [Newtonsoft.Json.JsonConstructor]
-        public Export(System.Collections.Generic.ICollection<Bucket>? @buckets)
-        {
-            this.Buckets = @buckets;
-        }
-    
         [Newtonsoft.Json.JsonProperty("buckets", Required = Newtonsoft.Json.Required.Default, NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore)]
-        public System.Collections.Generic.ICollection<Bucket>? Buckets { get; }
+        public System.Collections.Generic.ICollection<Bucket>? Buckets { get; set; }= default!;
     
         public string ToJson()
         {

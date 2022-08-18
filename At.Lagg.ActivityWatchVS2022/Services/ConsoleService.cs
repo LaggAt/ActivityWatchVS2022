@@ -10,6 +10,8 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Extensibility.Definitions;
+using Microsoft.VisualStudio.Threading;
+using Microsoft.VisualStudio.Extensibility.Helpers;
 
 namespace At.Lagg.ActivityWatchVS2022.Services
 {
@@ -17,64 +19,79 @@ namespace At.Lagg.ActivityWatchVS2022.Services
     {
         //TODO: use new URL once the new Support thread is here.
         private const string SUPPORT_THREAD_URL = @"https://tinyurl.com/yzg8aq4o";
+
         private const string COFFEE_URL = @"https://buymeacoffee.com/LaggAt";
         //private readonly TraceSource _logger;
 
         //TODO: define trace level in settings
-        private LogLevel _logLevel = LogLevel.Debug;
+        private LogLevel _logLevel = LogLevel.Trace;
 
         private OutputWindow? _outputWindow;
 
+        //[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "<Pending>")]
         public ConsoleService(ExtensionCore container, VisualStudioExtensibility extensibility) //, TraceSource traceListener
             : base(container, extensibility)
         {
-            var initTask = Task.Run(this.InitializeAsync);
-#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
-            initTask.Wait();
-#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
+            Task.Run(this.InitializeAsync);
+                //.GetAwaiter().GetResult();
+//#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
+//            initTask.Wait();
+//#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
         }
 
-        protected async Task InitializeAsync()
+        private async Task InitializeAsync()
         {
             _outputWindow =
                 await this.Extensibility.Views().Output.GetChannelAsync(
-                "Activity Watch",
+                "ActivityWatch VS2022",
                 $"{nameof(ActivityWatchVS2022)}-{Guid.NewGuid()}",
                 default
             );
             Requires.NotNull(_outputWindow, nameof(_outputWindow));
-            sayHello();
-            tellVersion();
 
-        }
-
-        public void WriteLineDebug(string str, params object?[] args)
-        {
-            this.WriteLine(LogLevel.Debug, str, args);
-        }
-        public void WriteLineInfo(string str, params object?[] args)
-        {
-            this.WriteLine(LogLevel.Information, str, args);
-        }
-        public void WriteLineError(string str, params object?[] args)
-        {
-            this.WriteLine(LogLevel.Error, str, args);
+            await sayHelloAsync();
+            await tellVersionAsync();
         }
 
-        public void WriteLine(LogLevel level, string s, params object?[] args)
+        public async Task WriteLineDebugAsync(string str, params object?[] args)
+        {
+            await this.WriteLineAsync(LogLevel.Debug, str, args);
+        }
+
+        public async Task WriteLineInfoAsync(string str, params object?[] args)
+        {
+            await this.WriteLineAsync(LogLevel.Information, str, args);
+        }
+
+        public async Task WriteLineErrorAsync(string str, params object?[] args)
+        {
+            await this.WriteLineAsync(LogLevel.Error, str, args);
+        }
+
+        public async Task WriteLineAsync(LogLevel level, string s, params object?[] args)
         {
             string str = $"{level}: {s}";
             if (level >= this._logLevel)
             {
-                _outputWindow?.Writer.WriteLine(str, args);
+                await _outputWindow.Writer.WriteLineAsync( string.Format(str, args));
             }
         }
 
-        private void tellVersion()
+        private async Task tellVersionAsync()
         {
             //TODO: read version from Package.
             string version = "0.0.TODO";
-            _outputWindow?.Writer.WriteLine($"ActivityWatchVS2022 v{version} ready. {SUPPORT_THREAD_URL}");
+            await _outputWindow.Writer.WriteLineAsync($"ActivityWatchVS2022 v{version} ready. {SUPPORT_THREAD_URL}");
+        }
+
+        private string GetDayTime(DateTime now)
+        {
+            int hour = now.Hour;
+            if (hour >= 22 || hour < 6) { return "night"; }
+            if (hour >= 17) { return "evening"; }
+            if (hour >= 12) { return "afternoon"; }
+            // hour >= 6 < 17
+            return "morning";
         }
 
         /// <summary>
@@ -82,7 +99,7 @@ namespace At.Lagg.ActivityWatchVS2022.Services
         /// Well, a lot of effort to just say hi, but when do we really talk to our users?
         /// So let's enjoy this.
         /// </summary>
-        private void sayHello()
+        private async Task sayHelloAsync()
         {
             var random = new Random();
             DateTime now = DateTime.Now;
@@ -100,14 +117,7 @@ namespace At.Lagg.ActivityWatchVS2022.Services
                     break;
 
                 default: // Good morning
-                    int hour = now.Hour;
-                    string dayTime = "day";
-                    if (hour >= 22) { dayTime = "night"; }
-                    else if (hour >= 17) { dayTime = "evening"; }
-                    else if (hour >= 12) { dayTime = "afternoon"; }
-                    else if (hour >= 6) { dayTime = "morning"; }
-                    else { dayTime = "night"; }
-                    greeting = $"Good {dayTime}";
+                    greeting = $"Good {GetDayTime(now)}";
                     break;
             }
 
@@ -132,7 +142,7 @@ namespace At.Lagg.ActivityWatchVS2022.Services
             }
 
             int index = random.Next(welcomeMessages.Count);
-            _outputWindow?.Writer.WriteLine(welcomeMessages[index]);
+            await _outputWindow.Writer.WriteLineAsync(welcomeMessages[index]);
         }
     }
 }

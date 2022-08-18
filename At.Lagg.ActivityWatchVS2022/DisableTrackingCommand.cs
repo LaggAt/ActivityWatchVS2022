@@ -4,18 +4,17 @@ using Microsoft.VisualStudio.Extensibility.Definitions;
 
 namespace At.Lagg.ActivityWatchVS2022
 {
-    [Command(NAME, ID, "AW: disable tracking", placement: KnownCommandPlacement.ExtensionsMenu)]
+    [Command(ID, "AW: disable tracking", placement: CommandPlacement.ExtensionsMenu)]
     [CommandIcon("AddItem", IconSettings.IconOnly)]
     public class DisableTrackingCommand : Command
     {
-        public const ushort ID = 1;
-        public const string NAME = "At.Lagg.ActivityWatchVS2022.DisableTrackingCommand";
+        public const string ID = "At.Lagg.ActivityWatchVS2022.DisableTrackingCommand";
 
         private readonly object _syncLock = new object();
         private bool enabled = true;
 
-        public DisableTrackingCommand(VisualStudioExtensibility extensibility, ushort id)
-            : base(extensibility, id)
+        public DisableTrackingCommand(VisualStudioExtensibility extensibility, string name)
+            : base(extensibility, name)
         {
             this.DisableDuringExecution = true;
         }
