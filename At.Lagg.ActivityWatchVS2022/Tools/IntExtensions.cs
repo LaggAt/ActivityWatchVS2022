@@ -2,6 +2,8 @@
 {
     internal static class IntExtensions
     {
+        #region Methods
+
         public static string Ordinal(this int number)
         {
             var ones = number % 10;
@@ -18,5 +20,7 @@
                 default: return $"{number}th";
             }
         }
+
+        #endregion Methods
     }
 }

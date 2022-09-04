@@ -8,10 +8,16 @@ namespace At.Lagg.ActivityWatchVS2022
     [CommandIcon("AddItem", IconSettings.IconOnly)]
     public class DisableTrackingCommand : Command
     {
+        #region Fields
+
         public const string ID = "At.Lagg.ActivityWatchVS2022.DisableTrackingCommand";
 
         private readonly object _syncLock = new object();
         private bool enabled = true;
+
+        #endregion Fields
+
+        #region CTor
 
         public DisableTrackingCommand(VisualStudioExtensibility extensibility, string name)
             : base(extensibility, name)
@@ -19,6 +25,9 @@ namespace At.Lagg.ActivityWatchVS2022
             this.DisableDuringExecution = true;
         }
 
+        #endregion CTor
+
+        #region Methods
 
         public override async Task ExecuteCommandAsync(IClientContext context, CancellationToken cancellationToken)
         {
@@ -33,5 +42,7 @@ namespace At.Lagg.ActivityWatchVS2022
                 this.DisplayName = $"AW: {(enabled ? "disable" : "enable")} tracking";
             }
         }
+
+        #endregion Methods
     }
 }

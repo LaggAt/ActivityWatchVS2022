@@ -2,21 +2,15 @@
 using Microsoft;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Extensibility;
-using Microsoft.VisualStudio.Extensibility.Commands;
 using Microsoft.VisualStudio.Extensibility.Documents;
-using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.Extensibility.Definitions;
 using Microsoft.VisualStudio.Threading;
-using Microsoft.VisualStudio.Extensibility.Helpers;
 
 namespace At.Lagg.ActivityWatchVS2022.Services
 {
     public class ConsoleService : ExtensionPart
     {
+        #region Fields
+
         //TODO: use new URL once the new Support thread is here.
         private const string SUPPORT_THREAD_URL = @"https://tinyurl.com/yzg8aq4o";
 
@@ -28,30 +22,20 @@ namespace At.Lagg.ActivityWatchVS2022.Services
 
         private OutputWindow? _outputWindow;
 
+        #endregion Fields
+
+        #region CTor
+
         //[System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "VSTHRD002:Avoid problematic synchronous waits", Justification = "<Pending>")]
         public ConsoleService(ExtensionCore container, VisualStudioExtensibility extensibility) //, TraceSource traceListener
             : base(container, extensibility)
         {
-            Task.Run(this.InitializeAsync);
-                //.GetAwaiter().GetResult();
-//#pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
-//            initTask.Wait();
-//#pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
+            _ = Task.Run(this.InitializeAsync);
         }
 
-        private async Task InitializeAsync()
-        {
-            _outputWindow =
-                await this.Extensibility.Views().Output.GetChannelAsync(
-                "ActivityWatch VS2022",
-                $"{nameof(ActivityWatchVS2022)}-{Guid.NewGuid()}",
-                default
-            );
-            Requires.NotNull(_outputWindow, nameof(_outputWindow));
+        #endregion CTor
 
-            await sayHelloAsync();
-            await tellVersionAsync();
-        }
+        #region Methods
 
         public async Task WriteLineDebugAsync(string str, params object?[] args)
         {
@@ -68,20 +52,37 @@ namespace At.Lagg.ActivityWatchVS2022.Services
             await this.WriteLineAsync(LogLevel.Error, str, args);
         }
 
-        public async Task WriteLineAsync(LogLevel level, string s, params object?[] args)
+        public async Task WriteLineAsync(LogLevel level, string str, params object?[] args)
         {
-            string str = $"{level}: {s}";
-            if (level >= this._logLevel)
+            if (level >= this._logLevel && _outputWindow != null)
             {
-                await _outputWindow.Writer.WriteLineAsync( string.Format(str, args));
+                string fullStr = $"{level}: {str}";
+                await _outputWindow.Writer.WriteLineAsync(string.Format(fullStr, args));
             }
+        }
+
+        private async Task InitializeAsync()
+        {
+            _outputWindow =
+                await this.Extensibility.Views().Output.GetChannelAsync(
+                $"{nameof(ActivityWatchVS2022)}-{Guid.NewGuid()}",
+                "EXTENSION_NAME",
+                default
+            );
+            Requires.NotNull(_outputWindow, nameof(_outputWindow));
+
+            await sayHelloAsync();
+            await tellVersionAsync();
         }
 
         private async Task tellVersionAsync()
         {
             //TODO: read version from Package.
             string version = "0.0.TODO";
-            await _outputWindow.Writer.WriteLineAsync($"ActivityWatchVS2022 v{version} ready. {SUPPORT_THREAD_URL}");
+            if (_outputWindow != null)
+            {
+                await _outputWindow.Writer.WriteLineAsync($"ActivityWatchVS2022 v{version} ready.");
+            }
         }
 
         private string GetDayTime(DateTime now)
@@ -95,9 +96,8 @@ namespace At.Lagg.ActivityWatchVS2022.Services
         }
 
         /// <summary>
-        /// Say hi. This method is probably too long.
-        /// Well, a lot of effort to just say hi, but when do we really talk to our users?
-        /// So let's enjoy this.
+        /// Say hi. This method is probably too long. Well, a lot of effort to just say hi, but when
+        /// do we really talk to our users? So let's enjoy this.
         /// </summary>
         private async Task sayHelloAsync()
         {
@@ -142,7 +142,13 @@ namespace At.Lagg.ActivityWatchVS2022.Services
             }
 
             int index = random.Next(welcomeMessages.Count);
-            await _outputWindow.Writer.WriteLineAsync(welcomeMessages[index]);
+
+            if (_outputWindow != null)
+            {
+                await _outputWindow.Writer.WriteLineAsync(welcomeMessages[index]);
+            }
         }
+
+        #endregion Methods
     }
 }

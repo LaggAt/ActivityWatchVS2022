@@ -13,6 +13,8 @@
 #pragma warning disable 1591 // Disable "CS1591 Missing XML comment for publicly visible type or member ..."
 #pragma warning disable 8073 // Disable "CS8073 The result of the expression is always 'false' since a value of type 'T' is never equal to 'null' of type 'T?'"
 #pragma warning disable 3016 // Disable "CS3016 Arrays as attribute arguments is not CLS-compliant"
+#pragma warning disable 8603 // Disable "possible null reference return"
+#pragma warning disable 0659 // Disable "'class' overrides Object.Equals(object o) but does not override Object.GetHashCode()"
 
 namespace At.Lagg.ActivityWatchVS2022.API.V1
 {

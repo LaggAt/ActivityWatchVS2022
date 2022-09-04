@@ -1,22 +1,23 @@
-﻿using Microsoft.VisualStudio.Extensibility;
-using Microsoft.VisualStudio.ProjectSystem.Query.ProjectModel;
+﻿using At.Lagg.ActivityWatchVS2022.VO;
+using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.ProjectSystem.Query;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using At.Lagg.ActivityWatchVS2022.VO;
+using Microsoft.VisualStudio.ProjectSystem.Query.ProjectModel;
 using StreamJsonRpc;
 
 namespace At.Lagg.ActivityWatchVS2022.Services
 {
     public class SolutionInfoService : ExtensionPart
     {
+        #region CTor
+
         public SolutionInfoService(ExtensionCore container, VisualStudioExtensibility extensibility)
             : base(container, extensibility)
         {
         }
+
+        #endregion CTor
+
+        #region Methods
 
         public async Task<SolutionInfo?> GetSolutionInfoAsync()
         {
@@ -46,5 +47,7 @@ namespace At.Lagg.ActivityWatchVS2022.Services
             }
             return new SolutionInfo(solution.ActiveConfiguration, solution.BaseName, solution.Directory, solution.FileName, solution.Path);
         }
+
+        #endregion Methods
     }
 }

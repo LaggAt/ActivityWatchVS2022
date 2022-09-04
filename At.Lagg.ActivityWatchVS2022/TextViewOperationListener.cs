@@ -12,7 +12,13 @@ namespace At.Lagg.ActivityWatchVS2022
     [AppliesTo(ContentType = "code")]
     public class TextViewOperationListener : ExtensionPart, ITextViewLifetimeListener, ITextViewChangedListener
     {
+        #region Fields
+
         private readonly EventService _eventService;
+
+        #endregion Fields
+
+        #region CTor
 
         public TextViewOperationListener(ExtensionCore container, VisualStudioExtensibility extensibilityObject,
             EventService eventService
@@ -20,6 +26,10 @@ namespace At.Lagg.ActivityWatchVS2022
         {
             this._eventService = Requires.NotNull(eventService, nameof(eventService));
         }
+
+        #endregion CTor
+
+        #region Methods
 
         public async Task TextViewChangedAsync(TextViewChangedArgs args, CancellationToken cancellationToken)
         {
@@ -35,5 +45,7 @@ namespace At.Lagg.ActivityWatchVS2022
         {
             await this._eventService.AddEventAsync(textView.RpcContract);
         }
+
+        #endregion Methods
     }
 }

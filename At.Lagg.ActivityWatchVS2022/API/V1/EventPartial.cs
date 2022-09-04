@@ -1,16 +1,20 @@
 ﻿using At.Lagg.ActivityWatchVS2022.API.V1.DataObj;
 using At.Lagg.ActivityWatchVS2022.VO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Navigation;
 
 namespace At.Lagg.ActivityWatchVS2022.API.V1
 {
     internal partial class Event : IEquatable<Event>
     {
+        #region Properties
+
+        [Newtonsoft.Json.JsonIgnore()]
+        public IDataObj? IDataObj
+        { get { return this.Data as IDataObj; } }
+
+        #endregion Properties
+
+        #region Methods
+
         public static implicit operator Event(VsEventInfo v)
         {
             string file = v.ChangedFile;
@@ -63,14 +67,19 @@ namespace At.Lagg.ActivityWatchVS2022.API.V1
             {
                 case AppEditorActivity appEditorActivity:
                     return appEditorActivity.Equals(other.Data);
+
                 default:
                     return this.Data?.Equals(other?.Data) ?? false;
             }
         }
 
+        public override string ToString()
+        {
+            return $"starting {this.Timestamp} for {this.Duration} seconds: {this.Data}";
+        }
+
         /// <summary>
-        /// Extends a similar event and returns null, OR
-        /// creates a new event and returns it
+        /// Extends a similar event and returns null, OR creates a new event and returns it
         /// </summary>
         /// <param name="evInfo"></param>
         /// <returns></returns>
@@ -94,7 +103,7 @@ namespace At.Lagg.ActivityWatchVS2022.API.V1
         internal void SetDuration(Event? nextEvent = null)
         {
             DateTimeOffset until = DateTimeOffset.UtcNow;
-            if(nextEvent != null)
+            if (nextEvent != null)
             {
                 until = nextEvent.Timestamp;
             }
@@ -112,23 +121,18 @@ namespace At.Lagg.ActivityWatchVS2022.API.V1
             return this.Duration > afkSeconds;
         }
 
-        [Newtonsoft.Json.JsonIgnore()]
-        public IDataObj? IDataObj { get { return this.Data as IDataObj; } }
-
         internal string GetBucketID()
         {
             switch (this.Data)
             {
                 case IDataObj iData:
                     return $"{iData.BucketIDCustomPart}_{Environment.MachineName}";
+
                 default:
                     throw new NotImplementedException(this.Data?.GetType().ToString());
             }
         }
 
-        public override string ToString()
-        {
-            return $"starting {this.Timestamp} for {this.Duration} seconds: {this.Data}";
-        }
+        #endregion Methods
     }
 }

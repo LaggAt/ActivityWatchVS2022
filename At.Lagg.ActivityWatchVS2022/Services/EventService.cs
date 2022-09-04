@@ -2,15 +2,9 @@
 using At.Lagg.ActivityWatchVS2022.API.V1.DataObj;
 using At.Lagg.ActivityWatchVS2022.VO;
 using Microsoft;
-using Microsoft.ServiceHub.Framework;
-using Microsoft.VisualBasic;
 using Microsoft.VisualStudio.Extensibility;
-using Microsoft.VisualStudio.Extensibility.Editor;
-using Microsoft.VisualStudio.ProjectSystem.Query;
-using Microsoft.VisualStudio.ProjectSystem.Query.ProjectModel;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace At.Lagg.ActivityWatchVS2022.Services
 {
@@ -22,7 +16,6 @@ namespace At.Lagg.ActivityWatchVS2022.Services
         private const string API_CLIENT_NAME = "aw-watcher-vs2022";
         private const string AW_HOMEPAGE = @"https://activitywatch.net/";
         private const int SEND_RETRY_MS = 10000;
-
 
         private readonly ConsoleService _consoleService;
         private readonly SolutionInfoService _solutionInfoService;
@@ -40,7 +33,7 @@ namespace At.Lagg.ActivityWatchVS2022.Services
             this._consoleService = Requires.NotNull(consoleService, nameof(consoleService));
             this._solutionInfoService = Requires.NotNull(solutionInfoService, nameof(solutionInfoService));
 
-            initClient();
+            _client = getClient();
         }
 
         /// <summary>
@@ -67,13 +60,14 @@ namespace At.Lagg.ActivityWatchVS2022.Services
             }
         }
 
-
-        private void initClient()
+        private Client getClient()
         {
-            _client = new API.V1.Client();
+            var client = new API.V1.Client();
 
             //Todo should be configurable once out-of-proc supports Options dialog
-            _client.BaseUrl = $@"http://localhost:{ApiPort}/api";
+            client.BaseUrl = $@"http://localhost:{ApiPort}/api";
+
+            return client;
         }
 
         public async Task AddEventAsync(Microsoft.VisualStudio.RpcContracts.Editor.TextView textView, [CallerMemberName] string? caller = null)
@@ -96,7 +90,7 @@ namespace At.Lagg.ActivityWatchVS2022.Services
                 lock (_lock)
                     if (_workerThread == null)
                     {
-                        _workerThread = Task.Run(() => workerThread());
+                        _workerThread = Task.Run(() => workerLoopAsync());
                     }
             _continueWorker.Set();
         }
@@ -116,7 +110,7 @@ namespace At.Lagg.ActivityWatchVS2022.Services
             _continueWorker.Set();
         }
 
-        private async Task workerThread()
+        private async Task workerLoopAsync()
         {
             API.V1.Event? unsentEvent = null;
             for (; ; )
@@ -164,7 +158,6 @@ namespace At.Lagg.ActivityWatchVS2022.Services
                         {
                             unsentEvent.SetDuration();
                             await sendAsync(unsentEvent);
-
                         }
                         unsentEvent = null;
                         break;
@@ -175,7 +168,7 @@ namespace At.Lagg.ActivityWatchVS2022.Services
                     //TODO: log full exception + inner exceptions
                     await this._consoleService.WriteLineAsync(
                         Microsoft.Extensions.Logging.LogLevel.Error,
-                     "{0}: {1}", nameof(workerThread), ex.Message
+                     "{0}: {1}", nameof(workerLoopAsync), ex.Message
                     );
                 }
             }
@@ -188,7 +181,7 @@ namespace At.Lagg.ActivityWatchVS2022.Services
                 return;
             }
 
-            // retry until success 
+            // retry until success
             do
             {
                 try
@@ -214,7 +207,6 @@ namespace At.Lagg.ActivityWatchVS2022.Services
 
         private async Task internalSendBucketAsync(Event ev)
         {
-
             IDataObj evData = ev.IDataObj ?? throw new ArgumentNullException(nameof(ev));
             string bucketID = ev.GetBucketID();
 
