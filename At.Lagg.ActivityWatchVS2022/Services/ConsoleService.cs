@@ -2,14 +2,7 @@
 using Microsoft;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Extensibility;
-using Microsoft.VisualStudio.Extensibility.Commands;
 using Microsoft.VisualStudio.Extensibility.Documents;
-using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.VisualStudio.Extensibility.Definitions;
 using Microsoft.VisualStudio.Threading;
 
 namespace At.Lagg.ActivityWatchVS2022.Services
@@ -82,9 +75,8 @@ namespace At.Lagg.ActivityWatchVS2022.Services
 
         private void tellVersion()
         {
-            //TODO: read version from Package.
-            string version = "0.0.TODO";
-            _outputWindow?.Writer.WriteLine($"ActivityWatchVS2022 v{version} ready. {SUPPORT_THREAD_URL}");
+            Version? version = this.GetType().Assembly.GetName().Version;
+            _outputWindow?.Writer.WriteLine($"ActivityWatch VS2022: v{version} ready. {SUPPORT_THREAD_URL}");
         }
 
         private string GetDayTime(DateTime now)

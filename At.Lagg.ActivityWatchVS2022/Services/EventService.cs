@@ -2,15 +2,9 @@
 using At.Lagg.ActivityWatchVS2022.API.V1.DataObj;
 using At.Lagg.ActivityWatchVS2022.VO;
 using Microsoft;
-using Microsoft.ServiceHub.Framework;
-using Microsoft.VisualBasic;
 using Microsoft.VisualStudio.Extensibility;
-using Microsoft.VisualStudio.Extensibility.Editor;
-using Microsoft.VisualStudio.ProjectSystem.Query;
-using Microsoft.VisualStudio.ProjectSystem.Query.ProjectModel;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
-using System.Threading;
 
 namespace At.Lagg.ActivityWatchVS2022.Services
 {
@@ -75,7 +69,7 @@ namespace At.Lagg.ActivityWatchVS2022.Services
             _client.BaseUrl = $@"http://localhost:{ApiPort}/api";
         }
 
-        public async Task AddEventAsync(Microsoft.VisualStudio.RpcContracts.Editor.TextView textView, [CallerMemberName] string? caller = null)
+        public async Task AddEventAsync(Microsoft.VisualStudio.RpcContracts.Editor.TextViewContract textView, [CallerMemberName] string? caller = null)
         {
             VO.VsEventInfo eventInfo = new VO.VsEventInfo();
             eventInfo.UtcEventDateTime = DateTime.UtcNow;

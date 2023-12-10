@@ -1,15 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.0.159-alpha" />
-    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.0.159-alpha" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.9.52-preview-1" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.9.52-preview-1" />
   </ItemGroup>
   <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
+    <Title>ActivityWatchVS 2022</Title>
+    <Version>2023.12.1</Version>
+    <Authors>Florian Lagg &lt;github.com/LaggAt&gt;</Authors>
+    <RepositoryUrl>https://github.com/LaggAt/ActivityWatchVS2022</RepositoryUrl>
   </PropertyGroup>
 
 </Project>
