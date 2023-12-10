@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0-rc.2.21480.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.1" />
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.0.159-alpha" />
     <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.0.159-alpha" />
   </ItemGroup>

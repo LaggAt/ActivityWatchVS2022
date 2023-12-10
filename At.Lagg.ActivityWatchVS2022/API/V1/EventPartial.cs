@@ -1,13 +1,15 @@
-﻿using At.Lagg.ActivityWatchVS2022.VO;
+﻿using At.Lagg.ActivityWatchVS2022.API.V1.DataObj;
+using At.Lagg.ActivityWatchVS2022.VO;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Navigation;
 
 namespace At.Lagg.ActivityWatchVS2022.API.V1
 {
-    internal partial class Event
+    internal partial class Event : IEquatable<Event>
     {
         public static implicit operator Event(VsEventInfo v)
         {
@@ -30,7 +32,40 @@ namespace At.Lagg.ActivityWatchVS2022.API.V1
                 Language = Path.GetExtension(file).TrimStart(".".ToCharArray()),
                 Project = solution,
             };
-            return new Event(data, 0, v.UtcEventDateTime);
+            return new Event()
+            {
+                Timestamp = v.UtcEventDateTime,
+                Data = data,
+            };
+        }
+
+        public override bool Equals(object? other)
+        {
+            if (other is Event ev)
+            {
+                return this.Equals(ev);
+            }
+            return base.Equals(other);
+        }
+
+        /// <summary>
+        /// used to extend events of same type/file/...
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public bool Equals(Event? other)
+        {
+            if (other == null) return false; // no other
+            if (this.Data == null && other.Data == null) return true; // both data null
+            if (this.Data == null) return false; // just this data is null
+
+            switch (this.Data)
+            {
+                case AppEditorActivity appEditorActivity:
+                    return appEditorActivity.Equals(other.Data);
+                default:
+                    return this.Data?.Equals(other?.Data) ?? false;
+            }
         }
 
         /// <summary>
@@ -44,10 +79,11 @@ namespace At.Lagg.ActivityWatchVS2022.API.V1
             Event newEvent = (API.V1.Event)evInfo;
             if (this.Equals(newEvent))
             {
-                //TODO: extend event
-                throw new NotImplementedException();
+                // extend previous event, do not return the new one
+                SetDuration();
                 return null;
             }
+            SetDuration(newEvent);
             return newEvent;
         }
 
@@ -55,9 +91,14 @@ namespace At.Lagg.ActivityWatchVS2022.API.V1
         /// End this event with UTCNow.
         /// </summary>
         /// <returns></returns>
-        internal bool EndEvent()
+        internal void SetDuration(Event? nextEvent = null)
         {
-            throw new NotImplementedException();
+            DateTimeOffset until = DateTimeOffset.UtcNow;
+            if(nextEvent != null)
+            {
+                until = nextEvent.Timestamp;
+            }
+            this.Duration = (double)(until - this.Timestamp).TotalSeconds;
         }
 
         /// <summary>
@@ -67,7 +108,27 @@ namespace At.Lagg.ActivityWatchVS2022.API.V1
         /// <returns></returns>
         internal bool EventTimeouted(int afkSeconds)
         {
-            throw new NotImplementedException();
+            this.SetDuration();
+            return this.Duration > afkSeconds;
+        }
+
+        [Newtonsoft.Json.JsonIgnore()]
+        public IDataObj? IDataObj { get { return this.Data as IDataObj; } }
+
+        internal string GetBucketID()
+        {
+            switch (this.Data)
+            {
+                case IDataObj iData:
+                    return $"{iData.BucketIDCustomPart}_{Environment.MachineName}";
+                default:
+                    throw new NotImplementedException(this.Data?.GetType().ToString());
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"starting {this.Timestamp} for {this.Duration} seconds: {this.Data}";
         }
     }
 }

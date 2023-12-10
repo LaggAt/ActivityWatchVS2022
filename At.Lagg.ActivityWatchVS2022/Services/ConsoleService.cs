@@ -10,6 +10,7 @@ using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.Extensibility.Definitions;
+using Microsoft.VisualStudio.Threading;
 
 namespace At.Lagg.ActivityWatchVS2022.Services
 {
@@ -17,18 +18,19 @@ namespace At.Lagg.ActivityWatchVS2022.Services
     {
         //TODO: use new URL once the new Support thread is here.
         private const string SUPPORT_THREAD_URL = @"https://tinyurl.com/yzg8aq4o";
+
         private const string COFFEE_URL = @"https://buymeacoffee.com/LaggAt";
         //private readonly TraceSource _logger;
 
         //TODO: define trace level in settings
-        private LogLevel _logLevel = LogLevel.Debug;
+        private LogLevel _logLevel = LogLevel.Information;
 
         private OutputWindow? _outputWindow;
 
         public ConsoleService(ExtensionCore container, VisualStudioExtensibility extensibility) //, TraceSource traceListener
             : base(container, extensibility)
         {
-            var initTask = Task.Run(this.InitializeAsync);
+            var initTask = Task.Run(this.InitializeAsync); //.GetAwaiter().GetResult();
 #pragma warning disable VSTHRD002 // Avoid problematic synchronous waits
             initTask.Wait();
 #pragma warning restore VSTHRD002 // Avoid problematic synchronous waits
@@ -36,26 +38,34 @@ namespace At.Lagg.ActivityWatchVS2022.Services
 
         protected async Task InitializeAsync()
         {
-            _outputWindow =
-                await this.Extensibility.Views().Output.GetChannelAsync(
-                "Activity Watch",
-                $"{nameof(ActivityWatchVS2022)}-{Guid.NewGuid()}",
-                default
-            );
-            Requires.NotNull(_outputWindow, nameof(_outputWindow));
+            try
+            {
+                _outputWindow =
+                    await this.Extensibility.Views().Output.GetChannelAsync(
+                    "ActivityWatch VS2022",
+                    $"{nameof(ActivityWatchVS2022)}-{Guid.NewGuid()}",
+                    default
+                );
+                Requires.NotNull(_outputWindow, nameof(_outputWindow));
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
             sayHello();
             tellVersion();
-
         }
 
         public void WriteLineDebug(string str, params object?[] args)
         {
             this.WriteLine(LogLevel.Debug, str, args);
         }
+
         public void WriteLineInfo(string str, params object?[] args)
         {
             this.WriteLine(LogLevel.Information, str, args);
         }
+
         public void WriteLineError(string str, params object?[] args)
         {
             this.WriteLine(LogLevel.Error, str, args);
@@ -75,6 +85,16 @@ namespace At.Lagg.ActivityWatchVS2022.Services
             //TODO: read version from Package.
             string version = "0.0.TODO";
             _outputWindow?.Writer.WriteLine($"ActivityWatchVS2022 v{version} ready. {SUPPORT_THREAD_URL}");
+        }
+
+        private string GetDayTime(DateTime now)
+        {
+            int hour = now.Hour;
+            if (hour >= 22 || hour < 6) { return "night"; }
+            if (hour >= 17) { return "evening"; }
+            if (hour >= 12) { return "afternoon"; }
+            // hour >= 6 < 17
+            return "morning";
         }
 
         /// <summary>
@@ -100,14 +120,7 @@ namespace At.Lagg.ActivityWatchVS2022.Services
                     break;
 
                 default: // Good morning
-                    int hour = now.Hour;
-                    string dayTime = "day";
-                    if (hour >= 22) { dayTime = "night"; }
-                    else if (hour >= 17) { dayTime = "evening"; }
-                    else if (hour >= 12) { dayTime = "afternoon"; }
-                    else if (hour >= 6) { dayTime = "morning"; }
-                    else { dayTime = "night"; }
-                    greeting = $"Good {dayTime}";
+                    greeting = $"Good {GetDayTime(now)}";
                     break;
             }
 
