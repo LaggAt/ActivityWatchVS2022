@@ -2,6 +2,7 @@
 using At.Lagg.ActivityWatchVS2022.API.V1.DataObj;
 using At.Lagg.ActivityWatchVS2022.VO;
 using Microsoft;
+using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.Extensibility;
 using System.Collections.Concurrent;
 using System.Runtime.CompilerServices;
@@ -11,7 +12,6 @@ namespace At.Lagg.ActivityWatchVS2022.Services
     public class EventService : ExtensionPart
     {
         private const int WORKER_LOOP_MS = 5000;
-        private const int WORKER_SHUTDOWN_MS = 30000;
         private const int EVENT_AFK_SECONDS = 60 * 15;
         private const string API_CLIENT_NAME = "aw-watcher-vs2022";
         private const string AW_HOMEPAGE = @"https://activitywatch.net/";
@@ -25,7 +25,7 @@ namespace At.Lagg.ActivityWatchVS2022.Services
         private volatile object _lock = new object();
         private HashSet<string> _sentBuckets = new HashSet<string>();
         private readonly AutoResetEvent _continueWorker = new AutoResetEvent(false);
-        private Client _client;
+        private readonly Client _client;
 
         public EventService(ExtensionCore container, VisualStudioExtensibility extensibility, ConsoleService consoleService, SolutionInfoService solutionInfoService
         ) : base(container, extensibility)
@@ -44,11 +44,10 @@ namespace At.Lagg.ActivityWatchVS2022.Services
             get
             {
 #if DEBUG
-                // start aw-server --testing
+                // 'aw-server --testing'
                 return false;
-#else
-                return true;
 #endif
+                return true;
             }
         }
 
@@ -70,7 +69,7 @@ namespace At.Lagg.ActivityWatchVS2022.Services
             return client;
         }
 
-        public async Task AddEventAsync(Microsoft.VisualStudio.RpcContracts.Editor.TextView textView, [CallerMemberName] string? caller = null)
+        public async Task AddEventAsync(Microsoft.VisualStudio.RpcContracts.Editor.TextViewContract textView, [CallerMemberName] string? caller = null)
         {
             VO.VsEventInfo eventInfo = new VO.VsEventInfo();
             eventInfo.UtcEventDateTime = DateTime.UtcNow;
@@ -80,7 +79,9 @@ namespace At.Lagg.ActivityWatchVS2022.Services
             _eventsQueue.Enqueue(eventInfo);
             startQueue();
 
-            await _consoleService.WriteLineDebugAsync("queued change in '{0}', event source {1}, in solution {2} ({3})",
+            await _consoleService.WriteLineAsync(
+                LogLevel.Debug,
+                "queued change in '{0}', event source {1}, in solution {2} ({3})",
                 eventInfo.ChangedFile, caller, eventInfo.SolutionInfo?.BaseName, eventInfo.SolutionInfo?.Path);
         }
 
@@ -192,7 +193,9 @@ namespace At.Lagg.ActivityWatchVS2022.Services
                 }
                 catch (Exception ex)
                 {
-                    await _consoleService.WriteLineErrorAsync($"Is ActivityWatch installed and running? see {AW_HOMEPAGE}\r\n\tError {ex.Message}");
+                    await _consoleService.WriteLineAsync(
+                        LogLevel.Error,
+                        $"Is ActivityWatch installed and running? see {AW_HOMEPAGE}\r\n\tError {ex.Message}");
                     await Task.Delay(SEND_RETRY_MS);
                 }
             } while (unsentEvent != null);
@@ -202,7 +205,9 @@ namespace At.Lagg.ActivityWatchVS2022.Services
         {
             string bucketID = unsentEvent.GetBucketID();
             await _client.BucketsEventsPostAsync(unsentEvent, bucketID);
-            await _consoleService.WriteLineDebugAsync($"{unsentEvent.GetBucketID()}: sent event {unsentEvent}.");
+            await _consoleService.WriteLineAsync(
+                LogLevel.Debug,
+                $"{unsentEvent.GetBucketID()}: sent event {unsentEvent}.");
         }
 
         private async Task internalSendBucketAsync(Event ev)

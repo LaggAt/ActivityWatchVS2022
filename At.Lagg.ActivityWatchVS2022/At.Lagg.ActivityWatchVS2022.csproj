@@ -1,33 +1,19 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0-preview.7.22375.6" />
-    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.4.19-preview-1" />
-    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.4.19-preview-1" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Update="Strings.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Strings.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Update="Strings.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Strings.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Sdk" Version="17.9.52-preview-1" />
+    <PackageReference Include="Microsoft.VisualStudio.Extensibility.Build" Version="17.9.52-preview-1" />
   </ItemGroup>
   <PropertyGroup>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net8.0-windows7.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <EnforceCodeStyleInBuild>True</EnforceCodeStyleInBuild>
-    <SignAssembly>False</SignAssembly>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
-	  <!-- The VisualStudio.Extensibility preview packages are available from the azure-public/vside/vssdk feed -->
-	  <RestoreAdditionalProjectSources>https://pkgs.dev.azure.com/azure-public/vside/_packaging/vssdk/nuget/v3/index.json;$(RestoreAdditionalProjectSources)</RestoreAdditionalProjectSources>
+    <Title>ActivityWatchVS 2022</Title>
+    <Version>2023.12.1</Version>
+    <Authors>Florian Lagg &lt;github.com/LaggAt&gt;</Authors>
+    <RepositoryUrl>https://github.com/LaggAt/ActivityWatchVS2022</RepositoryUrl>
   </PropertyGroup>
 
 </Project>

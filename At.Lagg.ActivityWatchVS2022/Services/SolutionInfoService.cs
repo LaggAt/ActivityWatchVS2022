@@ -1,7 +1,6 @@
 ﻿using At.Lagg.ActivityWatchVS2022.VO;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.ProjectSystem.Query;
-using Microsoft.VisualStudio.ProjectSystem.Query.ProjectModel;
 using StreamJsonRpc;
 
 namespace At.Lagg.ActivityWatchVS2022.Services
@@ -21,11 +20,11 @@ namespace At.Lagg.ActivityWatchVS2022.Services
 
         public async Task<SolutionInfo?> GetSolutionInfoAsync()
         {
-            ISolution? solution = null;
+            ISolutionSnapshot? solution = null;
             try
             {
                 solution = (
-                    await this.Extensibility.Workspaces().QuerySolutionAsync<ISolution>(
+                    await this.Extensibility.Workspaces().QuerySolutionAsync<ISolutionSnapshot>(
                         query => query
                             .With(s => s.ActiveConfiguration)
                             .With(s => s.BaseName)

@@ -2,15 +2,20 @@
 using Microsoft;
 using Microsoft.VisualStudio.Extensibility;
 using Microsoft.VisualStudio.Extensibility.Editor;
-using Microsoft.VisualStudio.Extensibility.Editor.UI;
+
+//using Microsoft.VisualStudio.Extensibility.Editor.UI;
 
 namespace At.Lagg.ActivityWatchVS2022
 {
-    [ExtensionPart(typeof(ITextViewLifetimeListener))]
-    [ExtensionPart(typeof(ITextViewChangedListener))]
-    [AppliesTo(ContentType = "text")]
-    [AppliesTo(ContentType = "code")]
-    public class TextViewOperationListener : ExtensionPart, ITextViewLifetimeListener, ITextViewChangedListener
+    //[ExtensionPart(typeof(ITextViewLifetimeListener))]
+    //[ExtensionPart(typeof(ITextViewChangedListener))]
+    //[AppliesTo(ContentType = "text")]
+    //[AppliesTo(ContentType = "code")]
+    [VisualStudioContribution]
+    public class TextViewOperationListener :
+        ExtensionPart, // This is the extension part base class containing infrastructure necessary to use VS services.
+        ITextViewOpenClosedListener, // Indicates this part listens for text view lifetime events.
+        ITextViewChangedListener // Indicates this part listens to text view changes.
     {
         #region Fields
 
@@ -31,17 +36,21 @@ namespace At.Lagg.ActivityWatchVS2022
 
         #region Methods
 
+        public TextViewExtensionConfiguration TextViewExtensionConfiguration => new()
+        {
+        };
+
         public async Task TextViewChangedAsync(TextViewChangedArgs args, CancellationToken cancellationToken)
         {
             await this._eventService.AddEventAsync(args.AfterTextView.RpcContract);
         }
 
-        public async Task TextViewClosedAsync(ITextView textView, CancellationToken cancellationToken)
+        public async Task TextViewClosedAsync(ITextViewSnapshot textView, CancellationToken cancellationToken)
         {
             await this._eventService.AddEventAsync(textView.RpcContract);
         }
 
-        public async Task TextViewCreatedAsync(ITextView textView, CancellationToken cancellationToken)
+        public async Task TextViewOpenedAsync(ITextViewSnapshot textView, CancellationToken cancellationToken)
         {
             await this._eventService.AddEventAsync(textView.RpcContract);
         }
